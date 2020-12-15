@@ -1,9 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import CssBaseline from '@material-ui/core/CssBaseline'
+import {ThemeProvider} from '@material-ui/core/styles'
 
 import App from './App'
 import reportWebVitals from './reportWebVitals'
+import {darkTheme} from './theme'
 
 if (process.env.NODE_ENV === 'development') {
   const {worker} = require('./mocks/browser')
@@ -12,8 +14,10 @@ if (process.env.NODE_ENV === 'development') {
 
 ReactDOM.render(
   <React.StrictMode>
-    <CssBaseline />
-    <App />
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <App />
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root'),
 )
