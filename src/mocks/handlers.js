@@ -1,4 +1,11 @@
 import {rest} from 'msw'
+import jwt from 'jsonwebtoken'
+
+const secret = process.env.REACT_APP_SECRET || 'secret'
+
+const encodeJwt = payload => jwt.sign(payload, secret)
+
+// const decodeJwt = token => jwt.verify(token, secret)
 
 const USERS_WHITE_LIST = {
   'john.doe@mail.com': 'John Doe',
@@ -9,11 +16,9 @@ export const handlers = [
     const {email} = req.body
 
     if (USERS_WHITE_LIST[email]) {
+      const token = encodeJwt({username: USERS_WHITE_LIST[email]})
       sessionStorage.setItem('is-authenticated', true)
-      return res(
-        ctx.status(200),
-        ctx.json({user: {username: USERS_WHITE_LIST[email]}}),
-      )
+      return res(ctx.status(200), ctx.json({user: {token}}))
     }
 
     return res(
