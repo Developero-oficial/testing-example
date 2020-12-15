@@ -1,11 +1,6 @@
 import {rest} from 'msw'
-import jwt from 'jsonwebtoken'
 
-const secret = process.env.REACT_APP_SECRET || 'secret'
-
-const encodeJwt = payload => jwt.sign(payload, secret)
-
-// const decodeJwt = token => jwt.verify(token, secret)
+import {encodeJwt} from '../utils/jwt-utils'
 
 const USERS_WHITE_LIST = {
   'john.doe@mail.com': 'John Doe',

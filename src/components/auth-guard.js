@@ -1,14 +1,14 @@
 import React from 'react'
-import jwt_decode from 'jwt-decode'
 
 import {AuthContext} from '../contexts/auth-context'
+import {decodeJwt} from '../utils/jwt-utils'
 
 export const AuthGuard = ({children}) => {
   const [isAuth, setIsAuth] = React.useState(false)
   const [user, setUser] = React.useState({username: ''})
 
   const onLoginSuccess = React.useCallback(({token}) => {
-    const {username} = jwt_decode(token)
+    const {username} = decodeJwt(token)
     setIsAuth(true)
     setUser({username})
   }, [])
