@@ -2,9 +2,10 @@ import React from 'react'
 
 import {AuthContext} from '../contexts/auth-context'
 import {decodeJwt} from '../utils/jwt-utils'
-import {setItem} from '../utils/storage-utils'
+import {setItem, getItem} from '../utils/storage-utils'
 
 export const AuthGuard = ({children}) => {
+  const [isChecking, setIsChecking] = React.useState(true)
   const [isAuth, setIsAuth] = React.useState(false)
   const [user, setUser] = React.useState({username: ''})
 
@@ -15,10 +16,25 @@ export const AuthGuard = ({children}) => {
     setUser({username})
   }, [])
 
+  React.useEffect(() => {
+    const token = getItem({key: '@token'})
+
+    if (token) {
+      const {username} = decodeJwt(token)
+      setIsAuth(true)
+      setUser({username})
+    }
+    setIsChecking(false)
+  }, [])
+
   const authContextValues = {
     isAuth,
     user,
     onLoginSuccess,
+  }
+
+  if (isChecking) {
+    return 'Loading...'
   }
 
   return (
