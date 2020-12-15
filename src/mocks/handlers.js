@@ -1,10 +1,27 @@
 import {rest} from 'msw'
 
+const USERS_WHITE_LIST = {
+  'john.doe@mail.com': 'John Doe',
+}
+
 export const handlers = [
   rest.post('/login', (req, res, ctx) => {
-    sessionStorage.setItem('is-authenticated', true)
+    const {email} = req.body
 
-    return res(ctx.status(200))
+    if (USERS_WHITE_LIST[email]) {
+      sessionStorage.setItem('is-authenticated', true)
+      return res(
+        ctx.status(200),
+        ctx.json({user: {username: USERS_WHITE_LIST[email]}}),
+      )
+    }
+
+    return res(
+      ctx.status(401),
+      ctx.json({
+        errorMessage: 'Email or password incorrect',
+      }),
+    )
   }),
 
   rest.get('/user', (req, res, ctx) => {

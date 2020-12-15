@@ -1,31 +1,39 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import Container from '@material-ui/core/Container'
 import Box from '@material-ui/core/Box'
 
-import {withAuthServices} from '../../hocs/with-auth-services'
+import {loginService} from '../../services/auth-services'
+import {AuthContext} from '../../contexts/auth-context'
 
-const Login = ({loginService}) => {
+export const LoginPage = () => {
   const [isFetching, setIsFetching] = React.useState(false)
+  const [errorMsg, setErrorMsg] = React.useState('')
+  const {onLoginSuccess} = React.useContext(AuthContext)
 
   const handleSubmit = async e => {
     try {
-      setIsFetching(true)
       e.preventDefault()
+      setIsFetching(true)
       const {email, password} = e.target.elements
+
       const response = await loginService({
         email: email.value,
         password: password.value,
       })
 
       if (response.status === 200) {
-        // set auth
+        onLoginSuccess(response.data.user)
       }
-    } catch (e) {
-      console.log(e)
+    } catch (error) {
+      if (error.response) {
+        const {errorMessage} = error.response.data
+        return setErrorMsg(errorMessage)
+      }
+
+      setErrorMsg('Unexpected error. Please refresh the browser and try again')
     } finally {
       setIsFetching(false)
     }
@@ -39,6 +47,14 @@ const Login = ({loginService}) => {
             Login
           </Typography>
         </Box>
+
+        {errorMsg && (
+          <Box my={3}>
+            <Typography align="center" color="error">
+              {errorMsg}
+            </Typography>
+          </Box>
+        )}
 
         <form onSubmit={handleSubmit}>
           <TextField
@@ -78,10 +94,4 @@ const Login = ({loginService}) => {
       </Box>
     </Container>
   )
-}
-
-export const LoginPage = withAuthServices(Login)
-
-Login.propTypes = {
-  loginService: PropTypes.func.isRequired,
 }
