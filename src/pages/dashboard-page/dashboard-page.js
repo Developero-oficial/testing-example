@@ -7,10 +7,12 @@ import Typography from '@material-ui/core/Typography'
 import Container from '@material-ui/core/Container'
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper'
+import CircularProgress from '@material-ui/core/CircularProgress'
 
 import {Chart} from '../../components/chart'
 import {Deposits} from '../../components/deposits'
 import {Orders} from '../../components/orders'
+import {getOrdersService} from '../../services/orders-services'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -55,6 +57,25 @@ const useStyles = makeStyles(theme => ({
 
 export const DashboardPage = () => {
   const classes = useStyles()
+  const [orders, setOrders] = React.useState([])
+  const [isFetchingOrders, setIsFetchingOrders] = React.useState(true)
+
+  React.useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await getOrdersService()
+
+        const {orders} = response.data
+
+        setOrders(orders)
+      } catch (e) {
+        console.log(e)
+      } finally {
+        setIsFetchingOrders(false)
+      }
+    }
+    fetchOrders()
+  }, [])
 
   return (
     <div className={classes.root}>
@@ -95,7 +116,8 @@ export const DashboardPage = () => {
 
             <Grid item xs={12}>
               <Paper className={`${classes.paper} ${classes.fixedHeight}`}>
-                <Orders />
+                {isFetchingOrders && <CircularProgress />}
+                {!isFetchingOrders && <Orders data={orders} />}
               </Paper>
             </Grid>
           </Grid>

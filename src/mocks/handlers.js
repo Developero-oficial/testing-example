@@ -1,10 +1,7 @@
 import {rest} from 'msw'
 
-import {encodeJwt} from '../utils/jwt-utils'
-
-const USERS_WHITE_LIST = {
-  'john.doe@mail.com': 'John Doe',
-}
+import {encodeJwt, verifyJwt} from '../utils/jwt-utils'
+import {orders, USERS_WHITE_LIST} from './fake-data'
 
 export const handlers = [
   rest.post('/login', (req, res, ctx) => {
@@ -24,10 +21,15 @@ export const handlers = [
     )
   }),
 
-  rest.get('/user', (req, res, ctx) => {
-    const isAuthenticated = sessionStorage.getItem('is-authenticated')
+  rest.get('/orders', (req, res, ctx) => {
+    const bearer = req.headers.get('authorization')
+    let token = null
 
-    if (!isAuthenticated) {
+    if (bearer && bearer.startsWith('Bearer ')) {
+      token = bearer.substring(7, bearer.length)
+    }
+
+    if (!verifyJwt(token)) {
       return res(
         ctx.status(403),
         ctx.json({
@@ -39,7 +41,7 @@ export const handlers = [
     return res(
       ctx.status(200),
       ctx.json({
-        username: 'admin',
+        orders,
       }),
     )
   }),
