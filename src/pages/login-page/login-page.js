@@ -4,6 +4,7 @@ import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import Container from '@material-ui/core/Container'
 import Box from '@material-ui/core/Box'
+import {Redirect} from 'react-router-dom'
 
 import {loginService} from '../../services/auth-services'
 import {AuthContext} from '../../contexts/auth-context'
@@ -11,7 +12,7 @@ import {AuthContext} from '../../contexts/auth-context'
 export const LoginPage = () => {
   const [isFetching, setIsFetching] = React.useState(false)
   const [errorMsg, setErrorMsg] = React.useState('')
-  const {onLoginSuccess} = React.useContext(AuthContext)
+  const {onLoginSuccess, isAuth} = React.useContext(AuthContext)
 
   const handleSubmit = async e => {
     try {
@@ -37,6 +38,10 @@ export const LoginPage = () => {
     } finally {
       setIsFetching(false)
     }
+  }
+
+  if (!isFetching && isAuth) {
+    return <Redirect to="/dashboard" />
   }
 
   return (
