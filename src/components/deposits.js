@@ -8,6 +8,8 @@ const useStyles = makeStyles({
   },
 })
 
+const today = new Date()
+
 export const Deposits = () => {
   const classes = useStyles()
   return (
@@ -19,7 +21,7 @@ export const Deposits = () => {
         $3,024.00
       </Typography>
       <Typography color="textSecondary" className={classes.depositContext}>
-        on 15 March, 2019
+        on {today.toLocaleDateString()}
       </Typography>
       <div>
         <Typography>Updated</Typography>
