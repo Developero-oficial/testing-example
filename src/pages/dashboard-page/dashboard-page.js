@@ -13,6 +13,7 @@ import {Chart} from '../../components/chart'
 import {Deposits} from '../../components/deposits'
 import {Orders} from '../../components/orders'
 import {getOrdersService} from '../../services/orders-services'
+import {AuthContext} from '../../contexts/auth-context'
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -57,6 +58,10 @@ const useStyles = makeStyles(theme => ({
 
 export const DashboardPage = () => {
   const classes = useStyles()
+  const {
+    user: {username},
+    handleLogout,
+  } = React.useContext(AuthContext)
   const [orders, setOrders] = React.useState([])
   const [isFetchingOrders, setIsFetchingOrders] = React.useState(true)
 
@@ -89,11 +94,12 @@ export const DashboardPage = () => {
           >
             Dashboard
           </Typography>
-          <Typography>John Doe</Typography>
+          <Typography>{username}</Typography>
           <Button
             color="secondary"
             variant="contained"
             className={classes.signoutButton}
+            onClick={handleLogout}
           >
             Sign out
           </Button>

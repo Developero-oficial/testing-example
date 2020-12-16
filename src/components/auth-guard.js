@@ -16,6 +16,12 @@ export const AuthGuard = ({children}) => {
     setUser({username})
   }, [])
 
+  const handleLogout = () => {
+    setIsAuth(false)
+    setUser({username: ''})
+    setItem({key: '@token', value: null})
+  }
+
   React.useEffect(() => {
     const token = getItem({key: '@token'})
 
@@ -31,6 +37,7 @@ export const AuthGuard = ({children}) => {
     isAuth,
     user,
     onLoginSuccess,
+    handleLogout,
   }
 
   if (isChecking) {
