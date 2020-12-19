@@ -9,20 +9,69 @@ import {Redirect} from 'react-router-dom'
 import {loginService} from '../../services/auth-services'
 import {AuthContext} from '../../contexts/auth-context'
 
+const isEmailValid = email =>
+  !/^([A-Za-z0-9_\-.+])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,})$/.test(email)
+
 export const LoginPage = () => {
   const [isFetching, setIsFetching] = React.useState(false)
   const [errorMsg, setErrorMsg] = React.useState('')
+  const [emailValidation, setEmailValidation] = React.useState('')
+  const [passwordValidation, setPasswordValidation] = React.useState('')
   const {onLoginSuccess, isAuth} = React.useContext(AuthContext)
 
-  const handleSubmit = async e => {
+  const validateEmail = ({email}) => {
+    if (!email) {
+      setEmailValidation('The email is required')
+
+      return false
+    }
+
+    if (isEmailValid(email)) {
+      setEmailValidation(
+        'The email is not valid. Use the format username@mail.com',
+      )
+
+      return false
+    }
+
+    setEmailValidation('')
+    return true
+  }
+
+  const validatePassword = ({password}) => {
+    if (!password) {
+      setPasswordValidation('The password is required')
+
+      return false
+    }
+
+    setPasswordValidation('')
+
+    return true
+  }
+
+  const validateForm = handleSubmit => e => {
+    e.preventDefault()
+    const {
+      email: {value: emailValue},
+      password: {value: passwordValue},
+    } = e.target.elements
+
+    const isEmailValid = validateEmail({email: emailValue})
+    const isPasswordValid = validatePassword({password: passwordValue})
+
+    if (isEmailValid && isPasswordValid) {
+      handleSubmit({email: emailValue, password: passwordValue})
+    }
+  }
+
+  const handleSubmit = async ({email, password}) => {
     try {
-      e.preventDefault()
       setIsFetching(true)
-      const {email, password} = e.target.elements
 
       const response = await loginService({
-        email: email.value,
-        password: password.value,
+        email,
+        password,
       })
 
       if (response.status === 200) {
@@ -61,27 +110,29 @@ export const LoginPage = () => {
           </Box>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={validateForm(handleSubmit)}>
           <TextField
             variant="outlined"
             margin="normal"
-            required
             fullWidth
             id="email"
             label="Email Address"
             name="email"
             autoComplete="email"
+            error={!!emailValidation}
+            helperText={emailValidation}
           />
           <TextField
             variant="outlined"
             margin="normal"
-            required
             fullWidth
             name="password"
             label="Password"
             type="password"
             id="password"
             autoComplete="current-password"
+            error={!!passwordValidation}
+            helperText={passwordValidation}
           />
 
           <Box my={3}>
