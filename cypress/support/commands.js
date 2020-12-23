@@ -29,3 +29,9 @@ Cypress.Commands.add('login', ({email, password}) => {
   cy.findByLabelText(/password/i).type(password)
   cy.findByRole('button').click()
 })
+
+Cypress.Commands.add('setUserAuth', () => {
+  const token =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNjA4NzM0MTIzfQ.pkcHT8wOpRqjDjS07RXr8te6OiypE9Vaf8QNButo8hg'
+  window.localStorage.setItem('@token', token)
+})
